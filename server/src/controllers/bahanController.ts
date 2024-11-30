@@ -3,45 +3,46 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const getProducts = async (
+export const getBahan = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
     const search = req.query.search?.toString();
-    const products = await prisma.products.findMany({
+    const bahan = await prisma.bahan.findMany({
       where: {
         name: {
           contains: search,
         },
       },
     });
-    res.json(products);
+    res.json(bahan);
   } catch (error) {
-    res.status(500).json({ message: "Error retrieving products" });
+    res.status(500).json({ message: "Error retrieving bahan" });
   }
 };
 
-export const createProduct = async (
+export const createBahan = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const { productId, name,  stock } = req.body;
-    const product = await prisma.products.create({
+    const { bahanId, name, stock, unit } = req.body;
+    const bahan = await prisma.bahan.create({
       data: {
-        productId,
+        bahanId,
         name,
         stock,
+        unit,
       },
     });
-    res.status(201).json(product);
+    res.status(201).json(bahan);
   } catch (error) {
-    res.status(500).json({ message: "Error creating product" });
+    res.status(500).json({ message: "Error creating bahan" });
   }
 };
 
-export const updateProduct = async (
+export const updateBahan = async (
   req: Request,
   res: Response
 ): Promise<void> => {
@@ -49,32 +50,30 @@ export const updateProduct = async (
     const { id } = req.params; // Ambil ID dari parameter route
     const { name, stock } = req.body;
 
-    const updatedProduct = await prisma.products.update({
-      where: { productId: id },
+    const updatedBahan = await prisma.bahan.update({
+      where: { bahanId: id },
       data: {
         name,
         stock,
       },
     });
 
-    res.status(200).json(updatedProduct);
+    res.status(200).json(updatedBahan);
   } catch (error) {
-    res.status(500).json({ message: "Error updating product" });
+    res.status(500).json({ message: "Error updating bahan" });
   }
 };
-
-export const deleteProduct = async (
+export const deleteBahan = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
     const { id } = req.params;
-    await prisma.products.delete({
-      where: { productId: id },
+    await prisma.bahan.delete({
+      where: { bahanId: id },
     });
     res.status(204).send(); // Mengembalikan status 204 (No Content) jika berhasil menghapus
   } catch (error) {
-    res.status(500).json({ message: "Error deleting product" });
+    res.status(500).json({ message: "Error deleting bahan" });
   }
 };
-

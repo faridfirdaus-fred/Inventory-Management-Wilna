@@ -27,14 +27,8 @@ async function main() {
 
   const orderedFileNames = [
     "products.json",
-    "expenseSummary.json",
-    "sales.json",
-    "salesSummary.json",
-    "purchases.json",
-    "purchaseSummary.json",
     "users.json",
-    "expenses.json",
-    "expenseByCategory.json",
+    "bahan.json"
   ];
 
   await deleteAllData(orderedFileNames);

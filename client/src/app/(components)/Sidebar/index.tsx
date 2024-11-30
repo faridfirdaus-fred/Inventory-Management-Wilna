@@ -135,13 +135,7 @@ const Sidebar = () => {
           icon={SlidersHorizontal}
           label="Settings"
           isCollapsed={isSidebarCollapsed}
-        />
-        <SidebarLink
-          href="/expenses"
-          icon={CircleDollarSign}
-          label="Expenses"
-          isCollapsed={isSidebarCollapsed}
-        />
+        />  
       </div>
 
       {/* FOOTER */}

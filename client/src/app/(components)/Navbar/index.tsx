@@ -23,7 +23,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className=" px-6 rounded-full flex items-center justify-between w-full mb-7">
+    <div className="flex items-center justify-between w-full px-6 rounded-full mb-7">
       {/* LEFT SIDE */}
       <div className="flex items-center justify-between gap-5">
         <button
@@ -92,7 +92,7 @@ const Navbar = () => {
               height={50}
               className="object-cover h-full rounded-full"
             />
-            <span className="font-semibold">Ed Roh</span>
+            <span className="font-semibold">Wilna</span>
           </div>
         </div>
         <Link href="/settings">

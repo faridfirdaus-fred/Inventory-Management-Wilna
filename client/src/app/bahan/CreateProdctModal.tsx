@@ -2,36 +2,35 @@ import React, { ChangeEvent, FormEvent, useState } from "react";
 import { v4 } from "uuid";
 import Header from "@/app/(components)/Header";
 
-type ProductFormData = {
+type BahanFormData = {
   name: string;
   stock: number;
+  unit: string;
 };
 
-type CreateProductModalProps = {
+type CreateBahanModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (formData: ProductFormData) => void;
+  onCreate: (formData: BahanFormData) => void;
 };
 
-const CreateProductModal = ({
+const CreateBahanModal = ({
   isOpen,
   onClose,
   onCreate,
-}: CreateProductModalProps) => {
+}: CreateBahanModalProps) => {
   const [formData, setFormData] = useState({
-    productId: v4(),
+    bahanId: v4(),
     name: "",
     stock: 0,
+    unit: "",
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]:
-        name === "price" || name === "stock" || name === "rating"
-          ? parseFloat(value)
-          : value,
+      [name]: name === "stock" ? parseInt(value, 10) : value, // Convert stock to number
     });
   };
 
@@ -50,11 +49,11 @@ const CreateProductModal = ({
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-20">
       <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <Header name="Create New Product" />
+        <Header name="Create New Bahan" />
         <form onSubmit={handleSubmit} className="mt-5">
-          {/* PRODUCT NAME */}
-          <label htmlFor="productName" className={labelCssStyles}>
-            Product Name
+          {/* BAHAN NAME */}
+          <label htmlFor="name" className={labelCssStyles}>
+            Bahan Name
           </label>
           <input
             type="text"
@@ -66,17 +65,30 @@ const CreateProductModal = ({
             required
           />
 
-
-          {/* STOCK  */}
+          {/* STOCK */}
           <label htmlFor="stock" className={labelCssStyles}>
-            Stock 
+            Stock
           </label>
           <input
             type="number"
             name="stock"
-            placeholder="Stock "
+            placeholder="Stock"
             onChange={handleChange}
             value={formData.stock}
+            className={inputCssStyles}
+            required
+          />
+
+          {/* UNIT */}
+          <label htmlFor="unit" className={labelCssStyles}>
+            Unit
+          </label>
+          <input
+            type="text"
+            name="unit"
+            placeholder="Unit"
+            onChange={handleChange}
+            value={formData.unit}
             className={inputCssStyles}
             required
           />
@@ -101,4 +113,4 @@ const CreateProductModal = ({
   );
 };
 
-export default CreateProductModal;
+export default CreateBahanModal;

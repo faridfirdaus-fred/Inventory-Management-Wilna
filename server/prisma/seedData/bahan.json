@@ -1,0 +1,26 @@
+[
+    {
+        "bahanId": "1",
+        "name": "Tepung Beras",
+        "stock": 100,
+        "unit": "kg"
+    },
+    {
+        "bahanId": "2",
+        "name": "Gula Merah",
+        "stock": 50,
+        "unit": "kg"
+    },
+    {
+        "bahanId": "3",
+        "name": "Santan",
+        "stock": 200,
+        "unit": "liter"
+    },
+    {
+        "bahanId": "4",
+        "name": "Daun Pandan",
+        "stock": 30,
+        "unit": "lembar"
+    }
+]
