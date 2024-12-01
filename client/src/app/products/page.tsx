@@ -17,6 +17,7 @@ type Product = {
   productId: string;
   name: string;
   stock: number;
+  image?: string;
 };
 
 type ProductFormData = {
