@@ -1,10 +1,11 @@
-import { useGetBahanQuery } from "@/state/api";
+import { useGetInventoryQuery } from "@/state/api";
 import React from "react";
 import Image from "next/image";
 import { ShoppingBag } from "lucide-react";
+import Inventory from '../inventory/page';
 
-const CardBahan = () => {
-  const { data: bahan, isLoading } = useGetBahanQuery();
+const CardInventory = () => {
+  const { data: Inventory, isLoading } = useGetInventoryQuery();
 
   return (
     <div className="row-span-3 xl:row-span-6 bg-white shadow-md rounded-2xl pb-16">
@@ -13,18 +14,18 @@ const CardBahan = () => {
       ) : (
         <>
           <h3 className="text-lg font-semibold px-7 pt-5 pb-2">
-            Bahan Inventory
+            Inventory Inventory
           </h3>
           <hr />
           <div className="overflow-auto h-full">
-            {bahan?.map((item) => (
+            {Inventory?.map((item) => (
               <div
-                key={item.bahanId}
+                key={item.id}
                 className="flex items-center justify-between gap-3 px-5 py-7 border-b"
               >
                 <div className="flex items-center gap-3">
                   <Image
-                    src={`https://s3-inventorymanagement.s3.us-east-2.amazonaws.com/bahan${
+                    src={`https://s3-inventorymanagement.s3.us-east-2.amazonaws.com/Inventory${
                       Math.floor(Math.random() * 3) + 1
                     }.png`}
                     alt={item.name}
@@ -55,4 +56,4 @@ const CardBahan = () => {
   );
 };
 
-export default CardBahan;
+export default CardInventory;

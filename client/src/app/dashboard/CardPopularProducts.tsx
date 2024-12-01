@@ -6,25 +6,6 @@ import Image from "next/image";
 const CardPopularProducts = () => {
   const { data: dashboardMetrics, isLoading } = useGetDashboardMetricsQuery();
 
-  // Fungsi untuk menentukan gambar yang sesuai dengan nama produk
-  const getImageUrl = (name: string) => {
-    const imageMap: { [key: string]: string } = {
-      "Dodol A":
-        "https://s3-inventorymanagement.s3.us-east-2.amazonaws.com/dodol-a.png",
-      "Dodol B":
-        "https://s3-inventorymanagement.s3.us-east-2.amazonaws.com/dodol-b.png",
-      "Dodol C":
-        "https://s3-inventorymanagement.s3.us-east-2.amazonaws.com/dodol-c.png",
-      // Tambahkan entri tambahan sesuai kebutuhan
-    };
-
-    // Kembalikan URL gambar sesuai dengan nama produk, atau gambar default jika tidak ditemukan
-    return (
-      imageMap[name] ||
-      "https://s3-inventorymanagement.s3.us-east-2.amazonaws.com/default.png"
-    );
-  };
-
   return (
     <div className="row-span-3 xl:row-span-6 bg-white shadow-md rounded-2xl pb-16">
       {isLoading ? (
@@ -32,7 +13,7 @@ const CardPopularProducts = () => {
       ) : (
         <>
           <h3 className="text-lg font-semibold px-7 pt-5 pb-2">
-            Popular Products
+            Produk-Produk
           </h3>
           <hr />
           <div className="overflow-auto h-full">
@@ -43,7 +24,9 @@ const CardPopularProducts = () => {
               >
                 <div className="flex items-center gap-3">
                   <Image
-                    src={getImageUrl(product.name)}
+                    src={`https://s3-inventorymanagement.s3.us-east-2.amazonaws.com/product${
+                      Math.floor(Math.random() * 3) + 1
+                    }.png`}
                     alt={product.name}
                     width={48}
                     height={48}
@@ -53,7 +36,9 @@ const CardPopularProducts = () => {
                     <div className="font-bold text-gray-700">
                       {product.name}
                     </div>
-                    <div className="flex text-sm items-center"></div>
+                    <div className="flex text-sm items-center">
+                      <span className="mx-2">|</span>
+                    </div>
                   </div>
                 </div>
 
@@ -61,7 +46,7 @@ const CardPopularProducts = () => {
                   <button className="p-2 rounded-full bg-blue-100 text-blue-600 mr-2">
                     <ShoppingBag className="w-4 h-4" />
                   </button>
-                  {Math.round(product.stock / 1000)}k Sold
+                  {Math.round(product.stock)}
                 </div>
               </div>
             ))}

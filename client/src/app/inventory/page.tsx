@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import {
-  useGetBahanQuery,
-  useCreateBahanMutation,
-  useUpdateBahanMutation,
-  useDeleteBahanMutation,
+  useGetInventoryQuery,
+  useCreateInventoryMutation,
+  useUpdateInventoryMutation,
+  useDeleteInventoryMutation,
 } from "@/state/api";
 import Header from "@/app/(components)/Header";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
@@ -16,115 +16,119 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  CircularProgress,
 } from "@mui/material";
+import CreateInventoryModal from "./CreateInventoryModal";
 
 const Inventory = () => {
-  const { data: Bahan, error, isError, isLoading } = useGetBahanQuery();
-  const [createBahan] = useCreateBahanMutation();
-  const [updateBahan] = useUpdateBahanMutation();
-  const [deleteBahan] = useDeleteBahanMutation();
+  const { data: inventory, error, isError, isLoading } = useGetInventoryQuery();
+  const [createInventory] = useCreateInventoryMutation();
+  const [updateInventory] = useUpdateInventoryMutation();
+  const [deleteInventory] = useDeleteInventoryMutation();
 
-  const [open, setOpen] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [selectedBahan, setSelectedBahan] = useState<any>(null);
-  const [BahanToDelete, setBahanToDelete] = useState<string | null>(null);
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
-  const handleCreate = () => {
-    setOpen(true);
-    setSelectedBahan(null);
+  const openCreateDialog = () => {
+    setDialogOpen(true);
+    setSelectedItem(null);
   };
 
-  const handleEdit = (Bahan: any) => {
-    setOpen(true);
-    setSelectedBahan(Bahan);
+  const openEditDialog = (item: any) => {
+    setDialogOpen(true);
+    setSelectedItem(item);
   };
 
-  const handleDelete = (bahanId: string) => {
-    console.log("Delete function called with ID:", bahanId);
-    setBahanToDelete(bahanId);
-    setOpenDeleteDialog(true);
+  const openDeleteDialog = (id: string) => {
+    setItemToDelete(id);
+    setDeleteDialogOpen(true);
   };
 
   const confirmDelete = async () => {
-    if (BahanToDelete) {
-      await deleteBahan(BahanToDelete);
-      setOpenDeleteDialog(false);
-      setBahanToDelete(null);
+    if (itemToDelete) {
+      try {
+        await deleteInventory(itemToDelete).unwrap();
+      } catch (err) {
+        console.error("Failed to delete item:", err);
+      } finally {
+        setDeleteDialogOpen(false);
+        setItemToDelete(null);
+      }
     }
   };
 
-  const handleClose = () => {
-    setOpen(false);
-    setSelectedBahan(null);
+  const closeDialog = () => {
+    setDialogOpen(false);
+    setSelectedItem(null);
   };
 
   const handleSubmit = async (e: React.FormEvent, id?: string) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget as HTMLFormElement);
     const name = formData.get("name") as string;
-    const stock = parseInt(formData.get("stock") as string);
+    const stock = parseInt(formData.get("stock") as string, 10);
     const unit = formData.get("unit") as string;
 
     try {
       if (id) {
-        const response = await updateBahan({
+        await updateInventory({
           id,
-          updatedBahan: { name, stock, unit },
-        });
-        console.log("Update response:", response);
+          updatedInventory: { name, stock, unit },
+        }).unwrap();
       } else {
-        const response = await createBahan({
-          name,
-          stock,
-          unit,
-        });
-        console.log("Create response:", response);
+        await createInventory({ name, stock, unit }).unwrap();
       }
-      handleClose();
-    } catch (error) {
-      console.error("Error handling form submission:", error);
+      closeDialog();
+    } catch (err) {
+      console.error("Error submitting inventory form:", err);
     }
   };
 
   const columns: GridColDef[] = [
-    { field: "bahanId", headerName: "ID", width: 90 },
-    { field: "name", headerName: "Bahan Name", width: 200 },
+    { field: "name", headerName: "Nama Barang", width: 200 },
     { field: "stock", headerName: "Stok", width: 200 },
-    { field: "unit", headerName: "Unit", width: 200 },
+    { field: "unit", headerName: "Satuan", width: 200 },
     {
       field: "actions",
-      headerName: "Actions",
+      headerName: "Aksi",
       width: 180,
-      renderCell: (params) => {
-        return (
-          <div className="flex space-x-2">
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => handleEdit(params.row)}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={() => handleDelete(params.row.bahanId)}
-            >
-              Delete
-            </Button>
-          </div>
-        );
-      },
+      renderCell: (params) => (
+        <div className="flex space-x-2">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => openEditDialog(params.row)}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => params.row.id && openDeleteDialog(params.row.id)}
+          >
+            Hapus
+          </Button>
+        </div>
+      ),
     },
   ];
 
   if (isLoading) {
-    return <div className="py-4">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center py-10">
+        <CircularProgress />
+      </div>
+    );
   }
 
-  if (isError || error || !Bahan) {
+  if (isError || !inventory) {
     return (
-      <div className="text-center text-red-500 py-4">Failed to fetch Bahan</div>
+      <div className="text-center text-red-500 py-4">
+        Gagal memuat data inventaris. Silakan coba lagi.
+      </div>
     );
   }
 
@@ -132,78 +136,93 @@ const Inventory = () => {
     <div className="flex flex-col">
       <Header name="Inventory" />
       <Button
-        onClick={handleCreate}
+        onClick={() => setModalOpen(true)}
         variant="contained"
         color="primary"
         className="mb-4"
       >
-        Add Bahan
+        Tambah Barang
       </Button>
       <DataGrid
-        rows={Bahan}
+        rows={inventory}
         columns={columns}
-        getRowId={(row) => row.bahanId}
+        getRowId={(row) => row.id}
         checkboxSelection
         className="bg-white shadow rounded-lg border border-gray-200 mt-5 !text-gray-700"
-        onRowClick={(params) => handleEdit(params.row)}
       />
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{selectedBahan ? "Edit Bahan" : "Add Bahan"}</DialogTitle>
+
+      <Dialog open={isDialogOpen} onClose={closeDialog}>
+        <DialogTitle>
+          {selectedItem ? "Edit Barang" : "Tambah Barang"}
+        </DialogTitle>
         <DialogContent>
-          <form onSubmit={(e) => handleSubmit(e, selectedBahan?.bahanId)}>
+          <form onSubmit={(e) => handleSubmit(e, selectedItem?.id)}>
             <TextField
               name="name"
-              label="Bahan Name"
-              defaultValue={selectedBahan?.name || ""}
+              label="Nama Barang"
+              defaultValue={selectedItem?.name || ""}
               fullWidth
               required
-              className="mb-2"
+              className="mb-4"
             />
             <TextField
               name="stock"
-              label="Stock"
+              label="Stok"
               type="number"
-              defaultValue={selectedBahan?.stock || ""}
+              defaultValue={selectedItem?.stock || ""}
               fullWidth
               required
-              className="mb-2"
+              className="mb-4"
             />
             <TextField
               name="unit"
-              label="Unit"
-              defaultValue={selectedBahan?.unit || ""}
+              label="Satuan"
+              defaultValue={selectedItem?.unit || ""}
               fullWidth
               required
-              className="mb-2"
+              className="mb-4"
             />
             <DialogActions>
-              <Button onClick={handleClose} color="inherit">
-                Cancel
+              <Button onClick={closeDialog} color="inherit">
+                Batal
               </Button>
               <Button type="submit" variant="contained" color="primary">
-                {selectedBahan ? "Update" : "Add"}
+                {selectedItem ? "Simpan Perubahan" : "Tambah"}
               </Button>
             </DialogActions>
           </form>
         </DialogContent>
       </Dialog>
+
       <Dialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
+        open={isDeleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
       >
-        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogTitle>Konfirmasi Hapus</DialogTitle>
         <DialogContent>
-          <p>Are you sure you want to delete this Bahan?</p>
+          <p>Apakah Anda yakin ingin menghapus barang ini?</p>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
-            Cancel
+          <Button onClick={() => setDeleteDialogOpen(false)} color="inherit">
+            Batal
           </Button>
           <Button onClick={confirmDelete} variant="contained" color="error">
-            Delete
+            Hapus
           </Button>
         </DialogActions>
       </Dialog>
+
+      <CreateInventoryModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onCreate={async (formData) => {
+          try {
+            await createInventory(formData).unwrap();
+          } catch (err) {
+            console.error("Error creating inventory:", err);
+          }
+        }}
+      />
     </div>
   );
 };

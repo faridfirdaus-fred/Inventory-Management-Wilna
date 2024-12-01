@@ -14,23 +14,26 @@ datasource db {
 }
 
 model Users {
-  userId String @id
-  name   String
+  userId String @id @default(cuid())
+  username  String @unique
   password String
 }
 
 model Products {
-  productId     String      @id
-  name          String
-  stock Int @default(1)
+  productId String @id @default(uuid())
+  name      String
+  stock     Int    @default(1)
+  image     String? // Optional field, can be null
+
 }
 
-model Bahan {
-  bahanId String @id
-  name    String
-  stock   Int
-  unit    String
+model Inventory {
+  id    String @id @default(cuid())
+  name  String
+  stock Int
+  unit  String
 }
+
 
 
 

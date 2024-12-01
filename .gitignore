@@ -5,3 +5,8 @@ server/dist/
 client/.env/
 server/.env/
 client/.next/
+server/.next/
+client/.nuxt/
+server/seedData/
+server/prisma/migrations/
+server/prisma/seedData/

@@ -1,33 +1,40 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+// Interface untuk Product
 export interface Product {
   productId: string;
   name: string;
   stock: number;
+  image: string;
 }
 
+// Interface untuk Inventory (Inventory)
 export interface Inventory {
-  bahanId: string;
+  id: string;
   name: string;
   stock: number;
   unit: string;
 }
 
-export interface NewBahan {
+// Interface untuk data baru Inventory (Inventory)
+export interface NewInventory {
   name: string;
   stock: number;
   unit: string;
 }
 
+// Interface untuk data baru Product
 export interface NewProduct {
   name: string;
   stock: number;
 }
 
+// Interface untuk Dashboard Metrics
 export interface DashboardMetrics {
   popularProducts: Product[];
 }
 
+// Interface untuk User
 export interface User {
   userId: string;
   name: string;
@@ -38,9 +45,9 @@ export interface User {
 export const api = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL }),
   reducerPath: "api",
-  tagTypes: ["Products", "DashboardMetrics", "Users", "Bahan"],
+  tagTypes: ["Products", "DashboardMetrics", "Users", "Inventory"],
   endpoints: (build) => ({
-    // Product endpoints
+    // Endpoint terkait produk
     getProducts: build.query<Product[], string | void>({
       query: (search) => ({
         url: "/products",
@@ -75,53 +82,53 @@ export const api = createApi({
       invalidatesTags: ["Products"],
     }),
 
-    // Dashboard metrics endpoint
+    // Endpoint untuk dashboard metrics
     getDashboardMetrics: build.query<DashboardMetrics, void>({
       query: () => "/dashboard",
       providesTags: ["DashboardMetrics"],
     }),
 
-    // User endpoints
+    // Endpoint untuk pengguna
     getUsers: build.query<User[], void>({
       query: () => "/users",
       providesTags: ["Users"],
     }),
 
-    // Inventory (Bahan) endpoints
-    getBahan: build.query<Inventory[], void>({
+    // Endpoint terkait Inventory (Inventory)
+    getInventory: build.query<Inventory[], void>({
       query: () => "/inventory",
-      providesTags: ["Bahan"],
+      providesTags: ["Inventory"],
     }),
-    createBahan: build.mutation<Inventory, NewBahan>({
-      query: (newBahan) => ({
+    createInventory: build.mutation<Inventory, NewInventory>({
+      query: (newInventory) => ({
         url: "/inventory",
         method: "POST",
-        body: newBahan,
+        body: newInventory,
       }),
-      invalidatesTags: ["Bahan"],
+      invalidatesTags: ["Inventory"],
     }),
-    updateBahan: build.mutation<
+    updateInventory: build.mutation<
       Inventory,
-      { id: string; updatedBahan: NewBahan }
+      { id: string; updatedInventory: NewInventory }
     >({
-      query: ({ id, updatedBahan }) => ({
-        url: `/bahan/${id}`,
+      query: ({ id, updatedInventory }) => ({
+        url: `/inventory/${id}`,
         method: "PUT",
-        body: updatedBahan,
+        body: updatedInventory,
       }),
-      invalidatesTags: ["Bahan"],
+      invalidatesTags: ["Inventory"],
     }),
-    deleteBahan: build.mutation<void, string>({
+    deleteInventory: build.mutation<void, string>({
       query: (id) => ({
-        url: `/bahan/${id}`,
+        url: `/inventory/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Bahan"],
+      invalidatesTags: ["Inventory"],
     }),
   }),
 });
 
-// Export hooks for use in components
+// Ekspor hooks untuk digunakan di komponen
 export const {
   useGetProductsQuery,
   useCreateProductMutation,
@@ -129,8 +136,8 @@ export const {
   useDeleteProductMutation,
   useGetDashboardMetricsQuery,
   useGetUsersQuery,
-  useGetBahanQuery,
-  useCreateBahanMutation,
-  useUpdateBahanMutation,
-  useDeleteBahanMutation,
+  useGetInventoryQuery,
+  useCreateInventoryMutation,
+  useUpdateInventoryMutation,
+  useDeleteInventoryMutation,
 } = api;
